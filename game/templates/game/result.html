@@ -1,0 +1,152 @@
+<!-- game/templates/game/result.html -->
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<h1>Blackjack</h1>
+
+<div class="top_block">
+
+    <div class="result">
+    
+        <h2>{{ game.game_result }}</h2>
+    
+    </div>
+    
+   
+<div class="deck">
+    <img src="{% static 'images/back.jpg' %}" height="400px" alt="deck-back-1">
+    <img src="{% static 'images/back.jpg' %}" height="400px" alt="deck-back-2">
+    <img src="{% static 'images/back.jpg' %}" height="400px" alt="deck-back-3">
+
+</div>
+    </div>
+    
+    <div class="scores">
+        <div id="player-s">
+            <h2>Your Hand: <span id="player-score">{{ game.player_score }}</span> </h2>
+        </div>
+        
+        <div id="dealer-s">
+            <h2>Dealer's Hand: <span id="player-score">{{ game.dealer_score }}</span></h2>
+        </div>
+    </div>
+    
+<div class="bottom_block">
+
+    <div class="player">
+
+        <div id="player-hand">
+            {% for card in player_hand %}
+                <div id="player_c">
+                    <img src= "{% static 'images/'|add:card.0|add:' '|add:card.1|add:'.jpg' %}" alt="{{ card.0 }} of {{ card.1 }}">
+                </div>
+            {% endfor %}
+        </div>
+    
+    
+    </div>
+    
+    
+    <div class="dealer">
+    
+        <div id="dealer-hand">
+            {% for card in dealer_hand %}
+                    <div id="dealer_c">
+                        <img src="{% static 'images/'|add:card.0|add:' '|add:card.1|add:'.jpg' %}" alt="{{ card.0 }} of {{ card.1 }}">
+                    </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+</div>
+    
+<script>
+    function applyCardRotation() {
+        const cards = document.querySelectorAll('#player_c'); 
+        const cardCount = cards.length;
+        const middleIndex = Math.floor(cardCount / 2);
+    
+        cards.forEach((card, index) => {
+            const img = card.querySelector('img');
+            let rotationValue;
+    
+            if (cardCount % 2 === 0) {
+                if (index < middleIndex) {
+                    rotationValue = (-15 + (index * 5)) + 'deg';
+                } else {
+                    rotationValue = (15 - ((cardCount - index) * 5)) + 'deg';
+                }
+            } else {
+                if (index < middleIndex) {
+                    rotationValue = (-15 + (index * 5)) + 'deg';
+                } else if (index === middleIndex) {
+                    rotationValue = '0deg';
+                } else {
+                    rotationValue = (15 - ((cardCount - index) * 5)) + 'deg';
+                }
+            }
+    
+            card.style.setProperty('--rotation', rotationValue);
+        });
+    }
+    
+    </script>
+    
+    <script>
+        function applyCardRotation_2() {
+            const cards = document.querySelectorAll('#dealer_c'); 
+            const cardCount = cards.length;
+            const middleIndex = Math.floor(cardCount / 2); 
+        
+            cards.forEach((card, index) => {
+                const img = card.querySelector('img');
+                let rotationValue;
+        
+                if (cardCount % 2 === 0) {
+                    if (index < middleIndex) {
+                        rotationValue = (-15 + (index * 5)) + 'deg';
+                    } else {
+                        rotationValue = (15 - ((cardCount - index) * 5)) + 'deg';
+                    }
+                } else {
+                    if (index < middleIndex) {
+                        rotationValue = (-15 + (index * 5)) + 'deg';
+                    } else if (index === middleIndex) {
+                        rotationValue = '0deg';
+                    } else {
+                        rotationValue = (15 - ((cardCount - index) * 5)) + 'deg';
+                    }
+                }
+        
+                card.style.setProperty('--rotation', rotationValue);
+            });
+        }
+        
+        </script>
+
+
+    <script>
+    window.addEventListener('DOMContentLoaded', function () {
+        applyCardRotation();
+        applyCardRotation_2();
+    });
+    </script>
+
+
+    <div class="buttons">
+        <button id="play-again_b" form ='play-again'>PLAY AGAIN</button>
+        <button id="go-home_b" form ='go-home'>GO HOME</button>
+    </div>
+    
+    <form id = 'play-again' method="POST" action="{% url 'start_game' %}">
+        {% csrf_token %}
+    </form>
+
+    <form id = 'go-home' method="POST" action="{% url 'home' %}">
+        {% csrf_token %}
+    </form>
+
+{% endblock %}

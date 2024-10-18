@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<h1>Blackjack</h1>
+
+<div class="top_block">
+
+<div class="rules">
+
+    <ul>Rules:
+        <li>The goal is to reach 21 points or have a higher score than the dealer without exceeding 21.</li>
+        <li>You and the dealer each start with two cards. One of the dealer's cards is hidden.</li>
+        <li>Number cards (2-10) are worth their face value. Face cards (J, Q, K) are worth 10. Aces are worth 1 or 11.</li>
+        <li>After the initial deal, you can:
+            <ol>Hit: Get another card to increase your score.</ol>
+            <ol>Stand: Keep your current score and end your turn.</ol>
+        </li>
+        <li>If your score exceeds 21, you "bust" and lose the game.</li>
+        <li>After your turn, the dealer reveals their hidden card and must keep drawing cards until their score is 17 or higher.</li>
+        <li>The game ends when you or the dealer busts or both stand, and the higher score wins.</li>
+    </ul>
+
+</div>
+
+<div class="deck">
+    <img src="{% static 'images/back.jpg' %}" alt="deck-back-1">
+    <img src="{% static 'images/back.jpg' %}" alt="deck-back-2">
+    <img src="{% static 'images/back.jpg' %}" alt="deck-back-3">
+
+</div>
+</div>
+
+<div class="scores">
+    <div id="player-s">
+        <h2>Your Hand: <span id="player-score">{{ game.player_score }}</span> </h2>
+    </div>
+    
+    <div id="dealer-s">
+        <h2>Dealer's Hand:</h2>
+    </div>
+</div>
+
+<div class="bottom_block">
+<div class="player">
+
+    <div id="player-hand">
+        {% for card in player_hand %}
+            <div id="player_c">
+                <img src= "{% static 'images/'|add:card.0|add:' '|add:card.1|add:'.jpg' %}" alt="{{ card.0 }} of {{ card.1 }}">
+            </div>
+        {% endfor %}
+    </div>
+
+
+</div>
+
+<div class="dealer">
+
+    <div id="dealer-hand">
+        {% for card in dealer_hand %}
+            {% if forloop.counter == 1 %}
+                <div id="dealer_c" style="--rotation: -15deg;">
+                    <img src="{% static 'images/'|add:card.0|add:' '|add:card.1|add:'.jpg' %}" alt="{{ card.0 }} of {{ card.1 }}">
+                </div>
+            {% else %}
+                <div id="dealer_c" style="--rotation: 15deg;">
+                    <img src="{% static 'images/back'|add:'.jpg' %}" alt="Hidden Card">   
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+</div>
+
+<div class="buttons">
+    <button id="hit_b" form ='hit'>HIT</button>
+    <button id="stand_b" form ='stand'>STAND</button>
+</div>
+
+<form id = 'hit' method="POST" action="{% url 'hit' game.id %}">
+    {% csrf_token %}
+</form>
+
+</script>
+
+<script>
+function applyCardRotation() {
+    const cards = document.querySelectorAll('#player_c'); 
+    const cardCount = cards.length;
+    const middleIndex = Math.floor(cardCount / 2); 
+
+    cards.forEach((card, index) => {
+        const img = card.querySelector('img');
+        let rotationValue;
+
+        if (cardCount % 2 === 0) {
+            if (index < middleIndex) {
+                rotationValue = (-15 + (index * 5)) + 'deg';
+            } else {
+                rotationValue = (15 - ((cardCount - index) * 5)) + 'deg';
+            }
+        } else {
+            if (index < middleIndex) {
+                rotationValue = (-15 + (index * 5)) + 'deg';
+            } else if (index === middleIndex) {
+                rotationValue = '0deg';
+            } else {
+                rotationValue = (15 - ((cardCount - index) * 5)) + 'deg';
+            }
+        }
+
+        // Set the CSS variable --rotation for the current card
+        card.style.setProperty('--rotation', rotationValue);
+    });
+}
+
+</script>
+
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+    applyCardRotation();
+});
+
+document.getElementById('hit').addEventListener('submit', function(e) {
+    e.preventDefault(); 
+    
+    fetch(this.action, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',  
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({})
+    })
+    .then(response => response.json())
+    .then(data => {
+
+        if (data.redirect) {
+            window.location.href = data.url;
+            return;
+        }
+
+        document.getElementById('player-hand').innerHTML = '';  
+
+        data.player_hand.forEach(function(card) {
+            const cardDiv = document.createElement('div');
+            cardDiv.id = "player_c";
+            const img = document.createElement('img');
+            img.src = '/static/images/' + card[0] + ' ' + card[1] + '.jpg';  
+            img.alt = card[0] + ' of ' + card[1];
+            cardDiv.appendChild(img);
+            document.getElementById('player-hand').appendChild(cardDiv);  
+        });
+
+        document.getElementById('player-score').textContent = data.player_score;
+
+        applyCardRotation();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+});
+
+</script>
+
+<form id = 'stand' method="POST" action="{% url 'stand' game.id %}">
+    {% csrf_token %}
+</form>
+
+{% endblock %}

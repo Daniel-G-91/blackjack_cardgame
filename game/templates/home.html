@@ -1,0 +1,33 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="icon" href="{% static 'images/favicon.jpg' %}">
+    <title>Blackjack</title>
+</head>
+<body>
+
+    <div class="blackjack">
+      <p>''</p>
+    </div>
+
+    <div class="text">
+        <p class="neon-text">Blackjack</p>
+        <li>Back-end: Python, Django</li>
+        <li>Front-end: JavaScript, HTML, CSS</li>
+        <ol>BETTING Feature and an improved UI/UX are coming soon.</ol>
+    </div>
+
+    <div class="button">
+        <button id="play-game_b" form ='play-game'>PLAY GAME!</button>
+    </div>
+    
+    <form id = 'play-game' method="POST" action="{% url 'start_game' %}">
+        {% csrf_token %}
+    </form>
+
+</body>
+</html>
