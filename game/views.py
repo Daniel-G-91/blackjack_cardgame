@@ -72,7 +72,7 @@ def hit_view(request, game_id):
     game = Game.objects.get(id=game_id)
 
     if not game.is_active:
-        return JsonResponse({'redirect': True, 'url': f'/result/{game.id}/'})
+        return JsonResponse({'redirect': True, 'url': f'/blackjack/result/{game.id}/'})
 
     deck = game.deck
     player_hand = game.player_hand
@@ -90,7 +90,7 @@ def hit_view(request, game_id):
     if player_score > 21:
         game.is_active = False
         game.save()
-        return JsonResponse({'redirect': True, 'url': f'/result/{game.id}/'})
+        return JsonResponse({'redirect': True, 'url': f'/blackjack/result/{game.id}/'})
 
     return JsonResponse({
         'player_hand': player_hand,
