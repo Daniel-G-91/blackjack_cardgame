@@ -24,5 +24,6 @@ urlpatterns = [
     path('start/', start_game_view, name='start_game'),
     path('hit/<int:game_id>/', hit_view, name='hit'),
     path('stand/<int:game_id>/', stand_view, name='stand'),
-    path('result/<int:game_id>/', result_view, name='game_result')
+    path('result/<int:game_id>/', result_view, name='game_result'),
+    path('blackjack/', include('blackjack.urls'))
 ]
