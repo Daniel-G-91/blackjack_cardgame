@@ -19,11 +19,10 @@ from django.urls import path, include
 from game.views import home_view, start_game_view, hit_view, stand_view, result_view
 
 urlpatterns = [
-    path('', home_view, name='home'),
-    path("admin/", admin.site.urls),
-    path('start/', start_game_view, name='start_game'),
-    path('hit/<int:game_id>/', hit_view, name='hit'),
-    path('stand/<int:game_id>/', stand_view, name='stand'),
-    path('result/<int:game_id>/', result_view, name='game_result'),
-    path('blackjack/', include('blackjack.urls'))
+    path('blackjack/', home_view, name='home'),
+    path("blackjack/admin/", admin.site.urls),
+    path('blackjack/start/', start_game_view, name='start_game'),
+    path('blackjack/hit/<int:game_id>/', hit_view, name='hit'),
+    path('blackjack/stand/<int:game_id>/', stand_view, name='stand'),
+    path('blackjack/result/<int:game_id>/', result_view, name='game_result')
 ]
